@@ -3,7 +3,15 @@
     padding: 15px 10px;
     margin-bottom: 10px;
     border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14);
     transition: border, box-shadow, 300ms;
+}
+
+.Car:hover {
+    border: 1px solid #aaa;
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.25);
+    cursor: pointer;
 }
 
 .input {
