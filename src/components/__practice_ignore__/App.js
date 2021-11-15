@@ -1,9 +1,9 @@
 import styles from './App.module.scss';
 import { Component, createContext } from 'react';
-import Car from './components/__practice__/Car/Car';
+import Car from './components/__practice_ignore__/Car/Car';
 import PropTypes from 'prop-types';
-import ErrorBoundary from './components/__practice__/ErrorBoundary/ErrorBoundary';
-import Counter from './components/__practice__/Counter/Counter';
+import ErrorBoundary from './components/__practice_ignore__/ErrorBoundary/ErrorBoundary';
+import Counter from './components/__practice_ignore__/Counter/Counter';
 
 export const ClickedContext = createContext(false);
 
