@@ -69,6 +69,7 @@ class App extends Component {
             ? cars.map((car, index) => (
                 <ErrorBoundary key={index}>
                   <Car
+                    index={index}
                     name={car.name}
                     year={car.year}
                     src={car.src}
