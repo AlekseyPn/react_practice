@@ -1,9 +1,11 @@
 import styles from './App.module.scss';
-import { Component } from 'react';
+import { Component, createContext } from 'react';
 import Car from './components/Car/Car';
 import PropTypes from 'prop-types';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Counter from './components/Counter/Counter';
+
+export const ClickedContext = createContext(false);
 
 class App extends Component {
   constructor(props) {
@@ -24,6 +26,7 @@ class App extends Component {
       ],
       pageTitle: props.title,
       showCars: false,
+      clicked: false,
     };
   }
 
@@ -55,14 +58,19 @@ class App extends Component {
   };
 
   render() {
-    const { cars, showCars, pageTitle } = this.state;
+    const { cars, showCars, pageTitle, clicked } = this.state;
 
     return (
       <div className={styles.App}>
         <h1>{pageTitle}</h1>
-        <Counter />
+        <ClickedContext.Provider value={clicked}>
+          <Counter />
+        </ClickedContext.Provider>
         <div style={{ marginBottom: '10px', marginTop: '10px' }}>
           <button onClick={this.toggleCarsHandler}>Toggle cars</button>
+          <button onClick={() => this.setState({ clicked: true })}>
+            Change Clicked
+          </button>
         </div>
         <div className={styles.Cars}>
           {showCars
