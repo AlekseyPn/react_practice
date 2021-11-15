@@ -1,4 +1,4 @@
-import { ClickedContext } from '../../App';
+import { ClickedContext } from '../../../App';
 
 const Counter2 = () => {
   return (
