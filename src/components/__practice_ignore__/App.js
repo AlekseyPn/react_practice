@@ -75,19 +75,19 @@ class App extends Component {
         <div className={styles.Cars}>
           {showCars
             ? cars.map((car, index) => (
-                <ErrorBoundary key={index}>
-                  <Car
-                    index={index}
-                    name={car.name}
-                    year={car.year}
-                    src={car.src}
-                    onChangeName={(event) =>
-                      this.changeNameHandler(event.target.value, index)
-                    }
-                    onDelete={this.deleteHandler.bind(this, index)}
-                  />
-                </ErrorBoundary>
-              ))
+              <ErrorBoundary key={index}>
+                <Car
+                  index={index}
+                  name={car.name}
+                  year={car.year}
+                  src={car.src}
+                  onChangeName={(event) =>
+                    this.changeNameHandler(event.target.value, index)
+                  }
+                  onDelete={this.deleteHandler.bind(this, index)}
+                />
+              </ErrorBoundary>
+            ))
             : 'Click for show cars ⬆️'}
         </div>
       </div>
