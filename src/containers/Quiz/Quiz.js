@@ -2,6 +2,7 @@ import { Component } from 'react';
 import classes from './Quiz.module.scss';
 import ActiveQuiz from '../../components/ActiveQuiz/ActiveQuiz';
 import FinishedQuiz from '../../components/FinishedQuiz/FinishedQuiz';
+import PropTypes from 'prop-types';
 
 class Quiz extends Component {
   state = {
@@ -120,6 +121,10 @@ class Quiz extends Component {
     return this.state.activeQuestion + 1 === this.state.quiz.length;
   }
 
+  componentDidMount() {
+    console.log('Quiz Id - ', this.props.match.params.id);
+  }
+
   render() {
     return (
       <div className={classes.Quiz}>
@@ -146,5 +151,13 @@ class Quiz extends Component {
     );
   }
 }
+
+Quiz.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
+};
 
 export default Quiz;
