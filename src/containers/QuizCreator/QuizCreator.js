@@ -1,9 +1,10 @@
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import classes from './QuizCreator.module.scss';
 import Button from '../../components/shared/Button/Button';
-import { createControl } from '../../utils/form/form';
+import { createControl, validate, validateForm } from '../../utils/form/form';
 import Input from '../../components/shared/Forms/Input/Input';
 import Select from '../../components/shared/Forms/Select/Select';
+import axios from 'axios';
 
 function createOptionControl(index) {
   return createControl(
@@ -35,17 +36,92 @@ class QuizCreator extends Component {
     quiz: [],
     formControls: createControls(),
     rightAnswerId: 1,
+    isFormValid: true,
   };
 
   submitHandler = (event) => {
     event.preventDefault();
   };
 
-  addQuestionHandler = () => {};
-  createQuizHandler = () => {};
+  addQuestionHandler = (event) => {
+    event.preventDefault();
 
-  changeHandler = (event, controlName) => {
-    console.log(event, controlName);
+    const quiz = this.state.quiz.slice(0);
+    const index = quiz.length + 1;
+
+    const { question, options1, options2, options3, options4 } =
+      this.state.formControls;
+
+    const questionItem = {
+      question: question.value,
+      id: index,
+      rightAnswerId: this.state.rightAnswerId,
+      answer: [
+        {
+          text: options1.value,
+          id: options1.id,
+        },
+        {
+          text: options2.value,
+          id: options2.id,
+        },
+        {
+          text: options3.value,
+          id: options3.id,
+        },
+        {
+          text: options4.value,
+          id: options4.id,
+        },
+      ],
+    };
+
+    quiz.push(questionItem);
+
+    this.setState({
+      quiz,
+      formControls: createControls(),
+      isFormValid: false,
+      rightAnswerId: 1,
+    });
+  };
+  createQuizHandler = async (event) => {
+    event.preventDefault();
+
+    try {
+      await axios.post(
+        'https://react-practice-1e444-default-rtdb.europe-west1.firebasedatabase.app/quizes.json',
+        this.state.quiz
+      );
+
+      this.setState({
+        quiz: [],
+        formControls: createControls(),
+        isFormValid: false,
+        rightAnswerId: 1,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  changeHandler = (value, controlName) => {
+    const formControls = { ...this.state.formControls };
+    const control = { ...formControls[controlName] };
+
+    control.touched = true;
+    control.value = value;
+
+    control.valid = validate(value, control.validation);
+
+    formControls[controlName] = control;
+
+    const isFormValid = validateForm(formControls);
+
+    this.setState({
+      formControls,
+      isFormValid,
+    });
   };
 
   selectChangeHandler = (event) => {
@@ -58,9 +134,8 @@ class QuizCreator extends Component {
     return Object.entries(this.state.formControls).map(
       ([controlName, control], index) => {
         return (
-          <>
+          <Fragment key={`${controlName}-${index}`}>
             <Input
-              key={`${controlName}-${index}`}
               label={control.label}
               valid={control.valid}
               errorMessage={control.errorMessage}
@@ -72,7 +147,7 @@ class QuizCreator extends Component {
               }
             />
             {!index ? <hr /> : null}
-          </>
+          </Fragment>
         );
       }
     );
@@ -108,10 +183,18 @@ class QuizCreator extends Component {
               ]}
               onChange={this.selectChangeHandler}
             />
-            <Button type="primary" onClick={this.addQuestionHandler}>
+            <Button
+              type="primary"
+              disabled={!this.state.isFormValid}
+              onClick={this.addQuestionHandler}
+            >
               Add question
             </Button>
-            <Button type="success" onClick={this.createQuizHandler}>
+            <Button
+              type="success"
+              disabled={this.state.quiz.length === 0}
+              onClick={this.createQuizHandler}
+            >
               Create quiz
             </Button>
           </form>
