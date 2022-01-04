@@ -1,27 +1,41 @@
 import { Component } from 'react';
 import classes from './QuizList.module.scss';
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
+import Loader from '../../components/shared/Loader/Loader';
+import api from '../../config/api';
 
 class QuizList extends Component {
+  state = {
+    quizzes: [],
+    isLoading: true,
+  };
+
   renderQuizzes() {
-    return [1, 2, 3].map((quiz, index) => {
+    return this.state.quizzes.map((quiz) => {
       return (
-        <li key={index}>
-          <NavLink to={`/quiz/${quiz}`}>Test {quiz}</NavLink>
+        <li key={quiz.id}>
+          <NavLink to={`/quiz/${quiz.id}`}>{quiz.name}</NavLink>
         </li>
       );
     });
   }
 
-  componentDidMount() {
-    axios
-      .get(
-        'https://react-practice-1e444-default-rtdb.europe-west1.firebasedatabase.app/quizes.json'
-      )
-      .then((res) => {
-        console.log(res);
+  async componentDidMount() {
+    try {
+      const response = await api.get('quizes.json');
+
+      const quizzes = [];
+      Object.keys(response.data || {}).forEach((key, index) => {
+        quizzes.push({ id: key, name: `Тест №${index + 1}` });
       });
+
+      this.setState({
+        quizzes,
+        isLoading: false,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   render() {
@@ -30,7 +44,7 @@ class QuizList extends Component {
         <div>
           <h1>Quiz list</h1>
 
-          <ul>{this.renderQuizzes()}</ul>
+          {this.state.isLoading ? <Loader /> : <ul>{this.renderQuizzes()}</ul>}
         </div>
       </div>
     );

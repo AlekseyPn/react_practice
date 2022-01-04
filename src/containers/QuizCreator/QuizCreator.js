@@ -4,7 +4,7 @@ import Button from '../../components/shared/Button/Button';
 import { createControl, validate, validateForm } from '../../utils/form/form';
 import Input from '../../components/shared/Forms/Input/Input';
 import Select from '../../components/shared/Forms/Select/Select';
-import axios from 'axios';
+import api from '../../config/api';
 
 function createOptionControl(index) {
   return createControl(
@@ -56,7 +56,7 @@ class QuizCreator extends Component {
       question: question.value,
       id: index,
       rightAnswerId: this.state.rightAnswerId,
-      answer: [
+      answers: [
         {
           text: options1.value,
           id: options1.id,
@@ -89,10 +89,7 @@ class QuizCreator extends Component {
     event.preventDefault();
 
     try {
-      await axios.post(
-        'https://react-practice-1e444-default-rtdb.europe-west1.firebasedatabase.app/quizes.json',
-        this.state.quiz
-      );
+      await api.post('quizes.json', this.state.quiz);
 
       this.setState({
         quiz: [],
