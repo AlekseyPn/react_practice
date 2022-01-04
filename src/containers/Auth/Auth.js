@@ -2,6 +2,8 @@ import { Component } from 'react';
 import classes from './Auth.module.scss';
 import Button from '../../components/shared/Button/Button';
 import Input from '../../components/shared/Forms/Input/Input';
+import axios from 'axios';
+import { API_KEY } from '../../config/apiKeys';
 
 const validateEmail = (email) => {
   return email.match(
@@ -40,8 +42,42 @@ class Auth extends Component {
     },
   };
 
-  loginHandler = () => {};
-  registerHandler = () => {};
+  loginHandler = async () => {
+    try {
+      const authData = {
+        email: this.state.formControls.email.value,
+        password: this.state.formControls.password.value,
+        returnSecureToken: true,
+      };
+
+      const response = await axios.post(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
+        authData
+      );
+
+      console.log(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  registerHandler = async () => {
+    try {
+      const authData = {
+        email: this.state.formControls.email.value,
+        password: this.state.formControls.password.value,
+        returnSecureToken: true,
+      };
+
+      const response = await axios.post(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,
+        authData
+      );
+
+      console.log(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   submitHandler = (event) => {
     event.preventDefault();
   };
