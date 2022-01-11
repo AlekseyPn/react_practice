@@ -2,16 +2,13 @@ import { Component } from 'react';
 import classes from './QuizList.module.scss';
 import { NavLink } from 'react-router-dom';
 import Loader from '../../components/shared/Loader/Loader';
-import api from '../../config/api';
+import { connect } from 'react-redux';
+import { fetchQuizzes } from '../../store/actions/quiz';
+import PropTypes from 'prop-types';
 
 class QuizList extends Component {
-  state = {
-    quizzes: [],
-    isLoading: true,
-  };
-
   renderQuizzes() {
-    return this.state.quizzes.map((quiz) => {
+    return this.props.quizzes.map((quiz) => {
       return (
         <li key={quiz.id}>
           <NavLink to={`/quiz/${quiz.id}`}>{quiz.name}</NavLink>
@@ -21,21 +18,7 @@ class QuizList extends Component {
   }
 
   async componentDidMount() {
-    try {
-      const response = await api.get('quizes.json');
-
-      const quizzes = [];
-      Object.keys(response.data || {}).forEach((key, index) => {
-        quizzes.push({ id: key, name: `Тест №${index + 1}` });
-      });
-
-      this.setState({
-        quizzes,
-        isLoading: false,
-      });
-    } catch (e) {
-      console.log(e);
-    }
+    this.props.fetchQuizzes();
   }
 
   render() {
@@ -44,11 +27,34 @@ class QuizList extends Component {
         <div>
           <h1>Quiz list</h1>
 
-          {this.state.isLoading ? <Loader /> : <ul>{this.renderQuizzes()}</ul>}
+          {this.props.isLoading && !this.props.quizzes.length ? (
+            <Loader />
+          ) : (
+            <ul>{this.renderQuizzes()}</ul>
+          )}
         </div>
       </div>
     );
   }
 }
 
-export default QuizList;
+function mapStateToProps(state) {
+  return {
+    quizzes: state.quiz.quizzes,
+    isLoading: state.quiz.isLoading,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchQuizzes: () => dispatch(fetchQuizzes()),
+  };
+}
+
+QuizList.propTypes = {
+  isLoading: PropTypes.bool,
+  quizzes: PropTypes.array,
+  fetchQuizzes: PropTypes.func,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizList);
