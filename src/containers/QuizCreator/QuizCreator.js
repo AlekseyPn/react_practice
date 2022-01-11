@@ -4,7 +4,12 @@ import Button from '../../components/shared/Button/Button';
 import { createControl, validate, validateForm } from '../../utils/form/form';
 import Input from '../../components/shared/Forms/Input/Input';
 import Select from '../../components/shared/Forms/Select/Select';
-import api from '../../config/api';
+import { connect } from 'react-redux';
+import {
+  createQuizQuestion,
+  finishCreateQuiz,
+} from '../../store/actions/create';
+import PropTypes from 'prop-types';
 
 function createOptionControl(index) {
   return createControl(
@@ -33,7 +38,6 @@ function createControls() {
 
 class QuizCreator extends Component {
   state = {
-    quiz: [],
     formControls: createControls(),
     rightAnswerId: 1,
     isFormValid: true,
@@ -46,8 +50,7 @@ class QuizCreator extends Component {
   addQuestionHandler = (event) => {
     event.preventDefault();
 
-    const quiz = this.state.quiz.slice(0);
-    const index = quiz.length + 1;
+    const index = this.props.quiz.length + 1;
 
     const { question, options1, options2, options3, options4 } =
       this.state.formControls;
@@ -76,10 +79,9 @@ class QuizCreator extends Component {
       ],
     };
 
-    quiz.push(questionItem);
+    this.props.createQuizQuestion(questionItem);
 
     this.setState({
-      quiz,
       formControls: createControls(),
       isFormValid: false,
       rightAnswerId: 1,
@@ -87,19 +89,12 @@ class QuizCreator extends Component {
   };
   createQuizHandler = async (event) => {
     event.preventDefault();
-
-    try {
-      await api.post('quizes.json', this.state.quiz);
-
-      this.setState({
-        quiz: [],
-        formControls: createControls(),
-        isFormValid: false,
-        rightAnswerId: 1,
-      });
-    } catch (e) {
-      console.log(e);
-    }
+    this.setState({
+      formControls: createControls(),
+      isFormValid: false,
+      rightAnswerId: 1,
+    });
+    this.props.finishCreateQuiz();
   };
 
   changeHandler = (value, controlName) => {
@@ -189,7 +184,7 @@ class QuizCreator extends Component {
             </Button>
             <Button
               type="success"
-              disabled={this.state.quiz.length === 0}
+              disabled={this.props.quiz.length === 0}
               onClick={this.createQuizHandler}
             >
               Create quiz
@@ -201,4 +196,23 @@ class QuizCreator extends Component {
   }
 }
 
-export default QuizCreator;
+function mapStateToProps(state) {
+  return {
+    quiz: state.create.quiz,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    createQuizQuestion: (item) => dispatch(createQuizQuestion(item)),
+    finishCreateQuiz: () => dispatch(finishCreateQuiz()),
+  };
+}
+
+QuizCreator.propTypes = {
+  quiz: PropTypes.array,
+  createQuizQuestion: PropTypes.func,
+  finishCreateQuiz: PropTypes.func,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizCreator);
