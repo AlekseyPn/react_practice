@@ -4,30 +4,12 @@ import PropTypes from 'prop-types';
 import Backdrop from '../../shared/Backdrop/Backdrop';
 import { NavLink } from 'react-router-dom';
 
-const links = [
-  {
-    to: '/',
-    label: 'Quiz list',
-    exact: true,
-  },
-  {
-    to: '/auth',
-    label: 'Login',
-    exact: false,
-  },
-  {
-    to: '/quiz-creator',
-    label: 'Create quiz',
-    exact: false,
-  },
-];
-
 class Drawer extends Component {
   linkClickHandler = () => {
     this.props.onClose();
   };
 
-  renderLinks() {
+  renderLinks(links) {
     return links.map((link, index) => {
       return (
         <li key={index}>
@@ -51,10 +33,39 @@ class Drawer extends Component {
       drawerClasses.push(classes.close);
     }
 
+    const links = [
+      {
+        to: '/',
+        label: 'Quiz list',
+        exact: true,
+      },
+    ];
+
+    if (this.props.isAuthenticated) {
+      links.push(
+        {
+          to: '/quiz-creator',
+          label: 'Create quiz',
+          exact: false,
+        },
+        {
+          to: '/logout',
+          label: 'Logout',
+          exact: false,
+        }
+      );
+    } else {
+      links.push({
+        to: '/auth',
+        label: 'Login',
+        exact: false,
+      });
+    }
+
     return (
       <Fragment>
         <nav className={drawerClasses.join(' ')}>
-          <ul>{this.renderLinks()}</ul>
+          <ul>{this.renderLinks(links)}</ul>
         </nav>
         {this.props.isOpen ? <Backdrop onClick={this.props.onClose} /> : null}
       </Fragment>
@@ -65,6 +76,7 @@ class Drawer extends Component {
 Drawer.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
+  isAuthenticated: PropTypes.bool,
 };
 
 export default Drawer;
